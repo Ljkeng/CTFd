@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Background with subtle gradient -->
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 70%, #2e2e4f 100%); z-index: -1; animation: gradientShift 10s infinite alternate;"></div>
+    <div style="min-height: 100vh; padding: 20px; color: #e0e0e0; font-family: 'Inter', sans-serif; position: relative; z-index: 2; background: rgba(10, 10, 20, 0.7);">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Header Section -->
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-orbitron font-bold text-accent-purple mb-4 bg-gray-900 px-6 py-3 rounded-lg shadow-lg hover:text-accent-purple-hover transition-colors duration-300">Team</h1>
+                <p class="text-text-dark text-center mb-4">Welcome to {{ Configs.ctf_name }}!</p>
+                <p class="text-text-dark text-center mb-6">In order to participate, you must either join or create a team.</p>
+            </div>
+
+            <!-- Error Messages -->
+            <div class="mb-6">
+                {% include "components/errors.html" %}
+            </div>
+
+            <!-- Team Action Container -->
+            <div class="max-w-md mx-auto bg-gray-900 rounded-xl shadow-lg p-6 text-center">
+                {% if integrations.mlc() %}
+                    <a href="{{ url_for('auth.oauth_login', next=request.args.get('next', '/challenges') | urlencode) }}" class="block w-full p-3 mb-6 bg-accent-purple text-white rounded-md hover:bg-accent-purple-hover transition-all duration-300 transform hover:scale-105">
+                        Play with Official Team
+                    </a>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <a href="{{ url_for('teams.join', next=request.args.get('next', '/challenges') | urlencode) }}" class="p-3 bg-secondary-dark text-text-light rounded-md hover:bg-accent-purple hover:text-white transition-all duration-300 transform hover:scale-105">
+                            Join Unofficial Team
+                        </a>
+                        <a href="{{ url_for('teams.new', next=request.args.get('next', '/challenges') | urlencode) }}" class="p-3 bg-secondary-dark text-text-light rounded-md hover:bg-accent-purple hover:text-white transition-all duration-300 transform hover:scale-105">
+                            Create Unofficial Team
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <a href="{{ url_for('teams.join', next=request.args.get('next', '/challenges') | urlencode) }}" class="p-3 bg-accent-purple text-white rounded-md hover:bg-accent-purple-hover transition-all duration-300 transform hover:scale-105">
+                            Join Team
+                        </a>
+                        <a href="{{ url_for('teams.new', next=request.args.get('next', '/challenges') | urlencode) }}" class="p-3 bg-accent-purple text-white rounded-md hover:bg-accent-purple-hover transition-all duration-300 transform hover:scale-105">
+                            Create Team
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @keyframes gradientShift {
+            from { background-position: 0% 0%; }
+            to { background-position: 100% 100%; }
+        }
+    </style>
+{% endblock %}

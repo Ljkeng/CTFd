@@ -1,0 +1,114 @@
+<!-- This code is a drop-in replacement for your components/navbar.html file. -->
+
+<nav class="bg-gradient-to-r from-blue-900 to-purple-900 fixed top-0 left-0 w-full z-50 shadow-lg">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 md:h-20">
+            <!-- Left Side: Logo and CTF Name -->
+            <div class="flex-shrink-0">
+                <a class="flex items-center space-x-2" href="{{ url_for('views.static_html', route='/') }}">
+                    {% if Configs.ctf_logo %}
+                        <img class="ctf_logo h-10 w-auto" src="{{ url_for('views.files', path=Configs.ctf_logo) }}" alt="{{ Configs.ctf_name }}">
+                    {% else %}
+                        <span class="text-white text-2xl md:text-3xl font-bold font-mono">{{ Configs.ctf_name }}</span>
+                    {% endif %}
+                </a>
+            </div>
+
+            <!-- Center: Main Navigation Links (Hidden on mobile) -->
+            <div class="hidden md:flex flex-grow justify-center">
+                <div class="flex items-center space-x-6 lg:space-x-8">
+                    {% for page in Plugins.user_menu_pages %}
+                        <a href="{{ page.route }}" class="text-gray-300 hover:text-white text-lg font-medium transition-colors duration-200">{{ page.title }}</a>
+                    {% endfor %}
+
+                    {% if Configs.account_visibility != 'admins' %}
+                        <a href="{{ url_for('users.listing') }}" class="text-gray-300 hover:text-white text-lg font-medium transition-colors duration-200">Users</a>
+                        {% if Configs.user_mode == 'teams' %}
+                            <a href="{{ url_for('teams.listing') }}" class="text-gray-300 hover:text-white text-lg font-medium transition-colors duration-200">Teams</a>
+                        {% endif %}
+                    {% endif %}
+                    {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
+                        <a href="{{ url_for('scoreboard.listing') }}" class="text-gray-300 hover:text-white text-lg font-medium transition-colors duration-200">Scoreboard</a>
+                    {% endif %}
+                    <a href="{{ url_for('challenges.listing') }}" class="text-gray-300 hover:text-white text-lg font-medium transition-colors duration-200">Challenges</a>
+                </div>
+            </div>
+
+            <!-- Right Side: User Actions and Mobile Toggle -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-4">
+                    {% if authed() %}
+                        {% if is_admin() %}
+                            <a class="text-gray-300 hover:text-white text-sm font-medium" href="{{ url_for('admin.view') }}">Admin</a>
+                        {% endif %}
+                        <a class="text-gray-300 hover:text-white text-sm font-medium" href="{{ url_for('users.private') }}">Profile</a>
+                        <a class="text-white hover:bg-white hover:text-blue-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200" href="{{ url_for('auth.logout') }}">Logout</a>
+                    {% else %}
+                        {% if registration_visible() %}
+                            <a href="{{ url_for('auth.register') }}" class="bg-white text-blue-900 hover:text-blue-950 font-bold py-2 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105">Register</a>
+                        {% endif %}
+                        <a href="{{ url_for('auth.login') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-lg text-sm font-medium">Login</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button (Hamburger) -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu (hidden by default) -->
+    <div class="md:hidden hidden" id="mobile-menu">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            {% for page in Plugins.user_menu_pages %}
+                <a href="{{ page.route }}" class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium">{{ page.title }}</a>
+            {% endfor %}
+
+            {% if Configs.account_visibility != 'admins' %}
+                <a href="{{ url_for('users.listing') }}" class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Users</a>
+                {% if Configs.user_mode == 'teams' %}
+                    <a href="{{ url_for('teams.listing') }}" class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Teams</a>
+                {% endif %}
+            {% endif %}
+            {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
+                <a href="{{ url_for('scoreboard.listing') }}" class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Scoreboard</a>
+            {% endif %}
+            <a href="{{ url_for('challenges.listing') }}" class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Challenges</a>
+
+            <div class="border-t border-gray-700 my-2"></div>
+
+            {% if authed() %}
+                {% if is_admin() %}
+                    <a class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium" href="{{ url_for('admin.view') }}">Admin</a>
+                {% endif %}
+                <a class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium" href="{{ url_for('users.private') }}">Profile</a>
+                <a class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium" href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                {% if registration_visible() %}
+                    <a href="{{ url_for('auth.register') }}" class="bg-white text-blue-900 hover:bg-blue-950 block px-4 py-2 rounded-md text-base font-medium text-center transition-colors">Register</a>
+                {% endif %}
+                <a href="{{ url_for('auth.login') }}" class="text-gray-300 hover:bg-purple-900 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- JavaScript to toggle the mobile menu -->
+<script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+        const menu = document.getElementById('mobile-menu');
+        const isHidden = menu.classList.contains('hidden');
+        if (isHidden) {
+            menu.classList.remove('hidden');
+        } else {
+            menu.classList.add('hidden');
+        }
+    });
+</script>

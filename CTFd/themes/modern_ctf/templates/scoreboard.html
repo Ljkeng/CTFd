@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Background with subtle gradient -->
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 70%, #2e2e4f 100%); z-index: -1; animation: gradientShift 10s infinite alternate;"></div>
+    <div style="min-height: 100vh; padding: 20px; color: #e0e0e0; font-family: 'Inter', sans-serif; position: relative; z-index: 2; background: rgba(10, 10, 20, 0.7);">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Header Section -->
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-orbitron font-bold text-accent-purple mb-4 bg-gray-900 px-6 py-3 rounded-lg shadow-lg hover:text-accent-purple-hover transition-colors duration-300">Scoreboard</h1>
+            </div>
+
+            <!-- Error Messages -->
+            {% include "components/errors.html" %}
+
+            <!-- Score Graph Loading State -->
+            <div id="score-graph" class="mb-10 flex justify-center items-center">
+                <div class="text-center">
+                    <i class="fas fa-circle-notch fa-spin fa-3x text-accent-purple animate-pulse"></i>
+                </div>
+            </div>
+
+            <!-- Scoreboard Table -->
+            {% cache 60, CacheKeys.PUBLIC_SCOREBOARD_TABLE %}
+            {% if standings %}
+            <div id="scoreboard" class="mb-10">
+                <div class="bg-gray-900 rounded-xl shadow-lg p-6">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-primary-dark">
+                            <tr>
+                                <th class="p-4 font-semibold text-text-light border-b border-gray-700" scope="col" width="10%">Place</th>
+                                <th class="p-4 font-semibold text-text-light border-b border-gray-700" scope="col">{{ get_mode_as_word(capitalize=True) }}</th>
+                                <th class="p-4 font-semibold text-text-light border-b border-gray-700" scope="col">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for standing in standings %}
+                            <tr class="border-b border-gray-700 hover:bg-secondary-dark transition-all duration-300">
+                                <th class="p-4 text-center text-text-light" scope="row">{{ loop.index }}</th>
+                                <td class="p-4">
+                                    <a href="{{ generate_account_url(standing.account_id) }}" class="text-accent-purple hover:text-accent-purple-hover transition-colors duration-300">
+                                        {{ standing.name | truncate(50) }}
+                                        {% if standing.oauth_id %}
+                                            {% if Configs.user_mode == 'teams' %}
+                                                <a href="https://majorleaguecyber.org/t/{{ standing.name }}" target="_blank" rel="noopener" class="ml-2 inline-block bg-accent-purple text-white text-xs px-2 py-1 rounded-full hover:bg-accent-purple-hover transition-all duration-300">
+                                                    Official
+                                                </a>
+                                            {% elif Configs.user_mode == 'users' %}
+                                                <a href="https://majorleaguecyber.org/u/{{ standing.name }}" target="_blank" rel="noopener" class="ml-2 inline-block bg-accent-purple text-white text-xs px-2 py-1 rounded-full hover:bg-accent-purple-hover transition-all duration-300">
+                                                    Official
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td class="p-4 text-text-light">{{ standing.score }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            {% endcache %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script defer src="{{ url_for('views.themes', path='js/echarts.bundle.js') }}"></script>
+{% endblock %}
+
+{% block entrypoint %}
+    <script defer src="{{ url_for('views.themes', path='js/pages/scoreboard.js') }}"></script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @keyframes gradientShift {
+            from { background-position: 0% 0%; }
+            to { background-position: 100% 100%; }
+        }
+    </style>
+{% endblock %}

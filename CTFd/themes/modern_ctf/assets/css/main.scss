@@ -1,0 +1,129 @@
+@import "~bootstrap/scss/bootstrap.scss";
+@import "~highlight.js/styles/github.css";
+@import "includes/jumbotron.css";
+@import "includes/sticky-footer.css";
+@import "includes/award-icons.scss";
+@import "includes/flag-icons.scss";
+@import "includes/utils/opacity.scss";
+@import "includes/utils/min-height.scss";
+
+:root {
+  /* Color Palette */
+  --primary: #337ab7;
+  --secondary: #0056b3;;
+  --success: #a3d39c;
+  --danger: #d46767;
+  --text-color: #545454;
+  --border-radius-base: 0.25rem;
+
+  /* Typography */
+  --font-family-primary: "Lato", "LatoOffline", sans-serif;
+  --font-family-headings: "Raleway", "RalewayOffline", sans-serif;
+}
+
+html,
+body,
+.container {
+  font-family: var(--font-family-primary);
+  color: var(--text-color);
+}
+
+h1,
+h2 {
+  font-family: var(--font-family-headings);
+  font-weight: 500;
+  letter-spacing: 2px;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+blockquote {
+  border-left: 4px solid var(--secondary);
+  padding-left: 1rem;
+}
+
+.jumbotron {
+  border-radius: 0; /* Keeping the original jumbotron style */
+  text-align: center;
+}
+
+/* Forms and Inputs */
+.form-control:focus {
+  background-color: transparent;
+  border-color: var(--success);
+  box-shadow: 0 0 0 0.1rem rgba(163, 211, 156, 0.5); /* Using rgba for a softer glow */
+  transition: all 0.3s ease;
+}
+
+.input-filled-valid,
+.input-filled-invalid {
+  background-color: transparent !important;
+  transition: all 0.3s ease;
+}
+
+.input-filled-valid {
+  border-color: var(--success);
+  box-shadow: 0 0 0 0.1rem rgba(163, 211, 156, 0.5);
+}
+
+.input-filled-invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 0.1rem rgba(212, 103, 103, 0.5);
+}
+
+/* Buttons */
+.btn {
+  letter-spacing: 1px;
+  text-decoration: none;
+  user-select: none;
+  border-radius: var(--border-radius-base);
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem; /* Using rem for consistent spacing */
+  transition: all 0.3s ease;
+}
+
+.btn-outlined.btn-theme {
+  background: none;
+  color: var(--text-color);
+  border-color: var(--text-color);
+  border: 3px solid;
+}
+
+.btn-info {
+  background-color: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+}
+
+.badge-info {
+  background-color: var(--secondary) !important;
+}
+
+/* Modals and Alerts */
+.modal-content {
+  border-radius: var(--border-radius-base) !important;
+}
+
+.alert {
+  border-radius: var(--border-radius-base) !important;
+  padding: 0.8em;
+}
+
+/* Utility Classes */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-help {
+  cursor: help;
+}
+
+.fa-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
