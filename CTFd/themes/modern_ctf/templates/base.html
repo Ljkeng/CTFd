@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-950">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ Configs.ctf_description }}">
+    <meta name="author" content="{{ Configs.ctf_author }}">
+
+    <title>{{ Configs.ctf_name }}</title>
+    
+    <!-- Load Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Set up Tailwind configuration for custom colors and fonts -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#111827',
+                        'secondary-dark': '#1f2937',
+                        'accent-purple': '#8b5cf6',
+                        'accent-purple-hover': '#7c3aed',
+                        'text-light': '#f3f4f6',
+                        'text-dark': '#d1d5db',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- Link to Google Fonts for the new theme -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+
+    {% block stylesheets %}{% endblock %}
+
+    <link rel="shortcut icon" href="{{ Configs.ctf_small_icon }}" type="image/x-icon">
+    <meta name="theme-color" content="{{ Configs.theme_color }}">
+    
+    <script type="text/javascript">
+        var init = {
+            'urlRoot': "{{ request.script_root }}",
+            'csrfNonce': "{{ Session.nonce }}",
+            'userMode': "{{ Configs.user_mode }}",
+            'userId': {{ Session.id | tojson }},
+            'userName': {{ User.name | tojson }},
+            'userEmail': {{ User.email | tojson }},
+            'teamId': {{ Team.id | tojson }}, 
+            'teamName': {{ Team.name | tojson }},
+            'start': {{ Configs.start | tojson }},
+            'end': {{ Configs.end | tojson }},
+            'theme_settings': {{ Configs.theme_settings | tojson }}
+        }
+    </script>
+    
+    {% block head %}{% endblock %}
+    {{ Configs.theme_header }}
+</head>
+
+<body class="bg-gray-950 text-gray-200 min-h-screen flex flex-col">
+
+    <!-- The navbar is now a separate component -->
+    {% include "components/navbar.html" %}
+    
+    <!-- Main content area -->
+    <main role="main" class="flex-grow pt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-700 py-4 text-center text-gray-500 text-sm mt-auto">
+        <p>Powered by <a href="https://ctfd.io" class="hover:text-purple-400 transition-colors">CTFd</a></p>
+    </footer>
+
+    <!-- All scripts are moved to the end of the body for better performance -->
+    <script src="{{ url_for('views.themes', path='js/vendor.bundle.js') }}"></script>
+    <script src="{{ url_for('views.themes', path='js/core.js') }}"></script>
+    <script src="{{ url_for('views.themes', path='js/helpers.js') }}"></script>
+
+    {% block entrypoint %}
+    <script src="{{ url_for('views.themes', path='js/pages/main.js') }}"></script>
+    {% endblock %}
+
+    {% block scripts %}
+    {% endblock %}
+
+    {{ Plugins.scripts }}
+    {{ Configs.theme_footer }}
+</body>
+</html>

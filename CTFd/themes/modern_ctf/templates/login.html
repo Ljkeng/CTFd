@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Background with subtle gradient -->
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 70%, #2e2e4f 100%); z-index: -1; animation: gradientShift 10s infinite alternate;"></div>
+    <div style="min-height: 100vh; padding: 20px; color: #e0e0e0; font-family: 'Inter', sans-serif; position: relative; z-index: 2; background: rgba(10, 10, 20, 0.7);">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Header Section -->
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-orbitron font-bold text-accent-purple mb-4 bg-gray-900 px-6 py-3 rounded-lg shadow-lg hover:text-accent-purple-hover transition-colors duration-300">Login</h1>
+            </div>
+
+            <!-- Error Messages -->
+            <div class="mb-6">
+                {% include "components/errors.html" %}
+            </div>
+
+            <!-- Login Form Container -->
+            <div class="max-w-md mx-auto bg-gray-900 rounded-xl shadow-lg p-6">
+                {% if integrations.mlc() %}
+                    <a href="{{ url_for('auth.oauth_login') }}" class="block w-full text-center p-3 bg-secondary-dark text-text-light rounded-md hover:bg-accent-purple hover:text-white transition-all duration-300 mb-6">
+                        Login with Major League Cyber
+                    </a>
+                    <hr class="border-t border-gray-700 my-4 opacity-50">
+                {% endif %}
+
+                {% with form = Forms.auth.LoginForm() %}
+                    <form method="post" accept-charset="utf-8" autocomplete="off" class="space-y-6">
+                        {{ form.nonce() }} <!-- Rely on nonce for CSRF -->
+
+                        <div class="space-y-2">
+                            <label for="name" class="block text-sm font-medium text-text-light"><b>{{ form.name.label }}</b></label>
+                            {{ form.name(id="name", class="w-full p-3 rounded-md bg-secondary-dark text-text-light border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-purple transition-all duration-300", value=name) }}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="password" class="block text-sm font-medium text-text-light"><b>{{ form.password.label }}</b></label>
+                            {{ form.password(id="password", class="w-full p-3 rounded-md bg-secondary-dark text-text-light border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-purple transition-all duration-300", value=password) }}
+                        </div>
+
+                        <div class="flex justify-between items-center pt-4">
+                            <a href="{{ url_for('auth.reset_password') }}" class="text-accent-purple hover:text-accent-purple-hover transition-colors duration-300 text-sm">
+                                Forgot your password?
+                            </a>
+                            {{ form.submit(class="p-3 bg-accent-purple text-white rounded-md hover:bg-accent-purple-hover transition-all duration-300 transform hover:scale-105") }}
+                        </div>
+                    </form>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @keyframes gradientShift {
+            from { background-position: 0% 0%; }
+            to { background-position: 100% 100%; }
+        }
+    </style>
+{% endblock %}

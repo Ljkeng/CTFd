@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Background Section -->
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); z-index: -1;"></div>
+    
+    <div style="min-height: 100vh; padding-top: 120px; padding-bottom: 80px;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <!-- Header Section -->
+            <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+                <h1 style="font-size: 2.5rem; font-weight: 700; color: #00ffcc; margin-bottom: 1rem;">Team</h1>
+                <p style="color: #e0e0e0; font-size: 1.1rem; margin-bottom: 0.5rem;">Welcome to {{ Configs.ctf_name }}!</p>
+                <p style="color: #9ca3af; font-size: 1rem;">In order to participate, you must either join or create a team.</p>
+            </div>
+
+            <!-- Error Messages -->
+            <div style="margin-bottom: 2rem;">
+                {% include "components/errors.html" %}
+            </div>
+
+            <!-- Team Action Container -->
+            <div style="max-width: 600px; margin: 0 auto; background: #2a2a2a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); border: 1px solid #00ccff; padding: 2rem;">
+                {% if integrations.mlc() %}
+                    <!-- Official Team Button -->
+                    <a href="{{ url_for('auth.oauth_login', next=request.args.get('next', '/challenges') | urlencode) }}" 
+                       style="display: block; width: 100%; padding: 1rem; margin-bottom: 2rem; background: linear-gradient(135deg, #00ccff, #00ffcc); color: #0d0d0d; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 204, 255, 0.3);"
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0, 204, 255, 0.5)'"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0, 204, 255, 0.3)'">
+                        Play with Official Team
+                    </a>
+                    
+                    <!-- Unofficial Team Buttons -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <a href="{{ url_for('teams.join', next=request.args.get('next', '/challenges') | urlencode) }}" 
+                           style="padding: 1rem; background: #1a1a1a; color: #00ccff; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; border: 1px solid #00ccff; transition: all 0.3s ease;"
+                           onmouseover="this.style.background='#00ccff'; this.style.color='#0d0d0d'; this.style.transform='translateY(-2px)'"
+                           onmouseout="this.style.background='#1a1a1a'; this.style.color='#00ccff'; this.style.transform='translateY(0)'">
+                            Join Unofficial Team
+                        </a>
+                        <a href="{{ url_for('teams.new', next=request.args.get('next', '/challenges') | urlencode) }}" 
+                           style="padding: 1rem; background: #1a1a1a; color: #00ccff; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; border: 1px solid #00ccff; transition: all 0.3s ease;"
+                           onmouseover="this.style.background='#00ccff'; this.style.color='#0d0d0d'; this.style.transform='translateY(-2px)'"
+                           onmouseout="this.style.background='#1a1a1a'; this.style.color='#00ccff'; this.style.transform='translateY(0)'">
+                            Create Unofficial Team
+                        </a>
+                    </div>
+                {% else %}
+                    <!-- Standard Team Buttons -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <a href="{{ url_for('teams.join', next=request.args.get('next', '/challenges') | urlencode) }}" 
+                           style="padding: 1rem; background: #00ccff; color: #0d0d0d; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 204, 255, 0.3);"
+                           onmouseover="this.style.background='#00ffcc'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0, 204, 255, 0.5)'"
+                           onmouseout="this.style.background='#00ccff'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0, 204, 255, 0.3)'">
+                            Join Team
+                        </a>
+                        <a href="{{ url_for('teams.new', next=request.args.get('next', '/challenges') | urlencode) }}" 
+                           style="padding: 1rem; background: #00ccff; color: #0d0d0d; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 204, 255, 0.3);"
+                           onmouseover="this.style.background='#00ffcc'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0, 204, 255, 0.5)'"
+                           onmouseout="this.style.background='#00ccff'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0, 204, 255, 0.3)'">
+                            Create Team
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <style>
+        /* Mobile Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 15px !important;
+            }
+            
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+            
+            h1 {
+                font-size: 2rem !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block styles %}
+{% endblock %}

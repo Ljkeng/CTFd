@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+    <!-- Removed external CSS dependency, moving styles to inline or style block -->
+{% endblock %}
+
+{% block content %}
+    <!-- Background with subtle gradient -->
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 70%, #2e2e4f 100%); z-index: -1; animation: gradientShift 10s infinite alternate;"></div>
+    <div style="min-height: 100vh; padding: 20px; color: #e0e0e0; font-family: 'Inter', sans-serif; position: relative; z-index: 2; background: rgba(10, 10, 20, 0.7);">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Header Section -->
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-orbitron font-bold text-accent-purple mb-4 bg-gray-900 px-6 py-3 rounded-lg shadow-lg hover:text-accent-purple-hover transition-colors duration-300">Challenges</h1>
+            </div>
+
+            <!-- Error Messages -->
+            <div class="mb-6">
+                {% include "components/errors.html" %}
+            </div>
+
+            <!-- Challenge Modal -->
+            <div id="challenge-window" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" role="dialog" aria-hidden="true">
+                <div class="flex items-center justify-center min-h-screen">
+                    <div class="bg-gray-900 rounded-xl shadow-lg p-6 max-w-2xl w-full mx-4">
+                        <!-- Modal content will be dynamically loaded by challenges.js -->
+                        <div id="modal-content" class="text-text-light"></div>
+                        <button id="close-modal" class="mt-4 w-full p-3 bg-accent-purple text-white rounded-md hover:bg-accent-purple-hover transition-all duration-300 transform hover:scale-105">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenges Board Loading State -->
+            <div id="challenges-board" class="mb-10">
+                <div class="min-h-[50vh] flex justify-center items-center">
+                    <div class="text-center">
+                        <i class="fas fa-circle-notch fa-spin fa-3x text-accent-purple animate-pulse"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Close modal functionality
+        document.getElementById('close-modal')?.addEventListener('click', () => {
+            document.getElementById('challenge-window').classList.add('hidden');
+        });
+
+        // Enable tooltips if supported (for any future additions)
+        document.querySelectorAll('[data-toggle="tooltip"]').forEach(item => {
+            item.addEventListener('mouseover', () => {
+                if (typeof initTooltip === 'function') {
+                    initTooltip(item);
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block entrypoint %}
+    <script defer src="{{ url_for('views.themes', path='js/pages/challenges.js') }}"></script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @keyframes gradientShift {
+            from { background-position: 0% 0%; }
+            to { background-position: 100% 100%; }
+        }
+    </style>
+{% endblock %}

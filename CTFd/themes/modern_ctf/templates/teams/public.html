@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block content %}
+	<!-- Background Section -->
+	<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); z-index: -1;"></div>
+
+	<!-- Team Header Section -->
+	<div style="padding-top: 100px; padding-bottom: 3rem; background: rgba(42, 42, 42, 0.5); border-bottom: 2px solid #00ccff;">
+		<div class="container">
+			<h1 id="team-id" team-id="{{ team.id }}" style="color: #00ffcc; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">{{ team.name }}</h1>
+			
+			<div style="margin-bottom: 1rem;">
+				{% if team.oauth_id %}
+					<a href="https://majorleaguecyber.org/t/{{ team.name }}" style="text-decoration: none;">
+						<span style="display: inline-block; background: linear-gradient(135deg, #00ccff, #00ffcc); color: #0d0d0d; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 12px; font-weight: 600; margin-right: 0.5rem;">Official</span>
+					</a>
+				{% endif %}
+				{% if team.affiliation %}
+					<span style="display: inline-block; background: #374151; color: #00ccff; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500; margin-right: 0.5rem;">{{ team.affiliation }}</span>
+				{% endif %}
+				{% if team.country %}
+					<span style="display: inline-block; background: #374151; color: #00ccff; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
+						<i class="flag-{{ team.country.lower() }}"></i>
+						{{ lookup_country_code(team.country) }}
+					</span>
+				{% endif %}
+			</div>
+
+			{% for field in team.fields %}
+				<p style="color: #e0e0e0; margin: 0.5rem 0;">
+					<strong>{{ field.name }}:</strong> {{ field.value }}
+				</p>
+			{% endfor %}
+
+			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; max-width: 600px;">
+				<div style="text-align: center;">
+					<h2 id="team-place" style="color: #00ccff; font-size: 2rem; font-weight: 700; margin: 0;">
+						{% if scores_visible() %}
+							{% if place %}
+								{{ place }}
+							{% endif %}
+						{% endif %}
+					</h2>
+					<p style="color: #9ca3af; margin: 0.5rem 0 0 0;">place</p>
+				</div>
+				<div style="text-align: center;">
+					<h2 id="team-score" style="color: #00ccff; font-size: 2rem; font-weight: 700; margin: 0;">
+						{% if score %}
+							{{ score }}
+						{% endif %}
+					</h2>
+					<p style="color: #9ca3af; margin: 0.5rem 0 0 0;">points</p>
+				</div>
+			</div>
+
+			<div class="pt-3">
+				{% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
+					<a href="{{ team.website }}" target="_blank" rel="noopener">
+						<i class="fas fa-external-link-alt fa-2x" style="color: #00ccff; transition: color 0.3s ease;" data-toggle="tooltip" data-placement="top" title="{{ team.website }}" onmouseover="this.style.color='#00ffcc'" onmouseout="this.style.color='#00ccff'"></i>
+					</a>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<div class="container" style="padding: 3rem 20px;">
+		{% include "components/errors.html" %}
+
+		<!-- Members Section -->
+		<div class="row" style="margin-bottom: 3rem;">
+			<div class="col-md-12">
+				<h3 style="color: #00ffcc; margin-bottom: 1.5rem; font-weight: 600;">Members</h3>
+				<div style="background: #2a2a2a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); border: 1px solid #00ccff; overflow: hidden;">
+					<div style="overflow-x: auto; padding: 1.5rem;">
+						<table style="width: 100%; border-collapse: collapse;">
+							<thead>
+								<tr style="border-bottom: 2px solid #00ccff;">
+									<th style="padding: 1rem; text-align: left; font-weight: 600; color: #e0e0e0;">User Name</th>
+									<th style="padding: 1rem; text-align: right; font-weight: 600; color: #e0e0e0;">Score</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for member in team.members %}
+									<tr style="border-bottom: 1px solid #374151; transition: background 0.3s ease;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='transparent'">
+										<td style="padding: 1rem;">
+											<a href="{{ url_for('users.public', user_id=member.id) }}" style="color: #00ccff; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#00ffcc'" onmouseout="this.style.color='#00ccff'">
+												{{ member.name }}
+											</a>
+										</td>
+										<td style="padding: 1rem; text-align: right; color: #9ca3af;">{{ member.score }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{% if solves or awards %}
+			<!-- Graphs Section -->
+			<div class="row" style="margin-bottom: 3rem;">
+				<div class="col-md-6 d-none d-md-block d-lg-block" style="margin-bottom: 2rem;">
+					<div id="keys-pie-graph" class="d-flex align-items-center" style="background: #2a2a2a; border-radius: 12px; border: 1px solid #00ccff; padding: 2rem; min-height: 300px;">
+						<div class="text-center w-100">
+							<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner" style="color: #00ccff;"></i>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6 d-none d-md-block d-lg-block" style="margin-bottom: 2rem;">
+					<div id="categories-pie-graph" class="d-flex align-items-center" style="background: #2a2a2a; border-radius: 12px; border: 1px solid #00ccff; padding: 2rem; min-height: 300px;">
+						<div class="text-center w-100">
+							<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner" style="color: #00ccff;"></i>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12 d-none d-md-block d-lg-block">
+					<div id="score-graph" class="w-100 d-flex align-items-center" style="background: #2a2a2a; border-radius: 12px; border: 1px solid #00ccff; padding: 2rem; min-height: 400px;">
+						<div class="text-center w-100">
+							<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner" style="color: #00ccff;"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="clearfix"></div>
+
+			<!-- Awards Section -->
+			{% if awards %}
+				<div class="row" style="margin-bottom: 3rem;">
+					<div class="col-md-12">
+						<h3 style="color: #00ffcc; margin-bottom: 1.5rem; font-weight: 600;">Awards</h3>
+					</div>
+					{% for award in awards %}
+						<div class="col-md-3 col-sm-6" style="margin-bottom: 1.5rem;">
+							<div style="background: #2a2a2a; border: 1px solid #00ccff; border-radius: 12px; padding: 1.5rem; text-align: center;">
+								<i class="award-icon award-{{ award.icon }} fa-2x" style="color: #00ccff; margin-bottom: 1rem;"></i>
+								<p style="color: #e0e0e0; font-weight: 600; margin: 0.5rem 0;">{{ award.name }}</p>
+								{% if award.category %}<p style="color: #9ca3af; margin: 0.5rem 0;">{{ award.category }}</p>{% endif %}
+								{% if award.description %}<p style="color: #9ca3af; margin: 0.5rem 0;">{{ award.description }}</p>{% endif %}
+								<p style="color: #00ccff; font-weight: 600; margin: 0.5rem 0;">{{ award.value }}</p>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+
+			<!-- Solves Section -->
+			<div class="row">
+				<div class="col-md-12">
+					<h3 style="color: #00ffcc; margin-bottom: 1.5rem; font-weight: 600;">Solves</h3>
+					<div style="background: #2a2a2a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); border: 1px solid #00ccff; overflow: hidden;">
+						<div style="overflow-x: auto; padding: 1.5rem;">
+							<table style="width: 100%; border-collapse: collapse;">
+								<thead>
+									<tr style="border-bottom: 2px solid #00ccff;">
+										<th style="padding: 1rem; text-align: left; font-weight: 600; color: #e0e0e0;">Challenge</th>
+										<th class="d-none d-md-block d-lg-block" style="padding: 1rem; text-align: left; font-weight: 600; color: #e0e0e0;">Category</th>
+										<th style="padding: 1rem; text-align: center; font-weight: 600; color: #e0e0e0;">Value</th>
+										<th style="padding: 1rem; text-align: left; font-weight: 600; color: #e0e0e0;">Time</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for solve in solves %}
+										<tr style="border-bottom: 1px solid #374151; transition: background 0.3s ease;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='transparent'">
+											<td style="padding: 1rem;">
+												<a href="{{ url_for('challenges.listing') }}#{{ solve.challenge.name }}-{{ solve.challenge.id }}" style="color: #00ccff; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#00ffcc'" onmouseout="this.style.color='#00ccff'">
+													{{ solve.challenge.name }}
+												</a>
+											</td>
+											<td class="d-none d-md-block d-lg-block" style="padding: 1rem; color: #9ca3af;">{{ solve.challenge.category }}</td>
+											<td style="padding: 1rem; text-align: center; color: #9ca3af;">{{ solve.challenge.value }}</td>
+											<td class="solve-time" style="padding: 1rem; color: #9ca3af;">
+												<span data-time="{{ solve.date | isoformat }}"></span>
+											</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% else %}
+			<div class="row min-vh-25">
+				<h3 class="opacity-50 text-center w-100 justify-content-center align-self-center" style="color: #9ca3af;">
+					No solves yet
+				</h3>
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	<style>
+		/* Mobile responsive */
+		@media (max-width: 768px) {
+			div[style*="grid-template-columns: 1fr 1fr"] {
+				grid-template-columns: 1fr !important;
+			}
+			
+			h1 {
+				font-size: 2rem !important;
+			}
+		}
+	</style>
+	
+	<script>
+		var stats_data = {{ {
+			'type': 'team',
+			'id': team.id,
+			'name': team.name,
+			'account_id': team.id,
+		} | tojson }};
+	</script>
+	<script defer src="{{ url_for('views.themes', path='js/echarts.bundle.js') }}"></script>
+	<script defer src="{{ url_for('views.themes', path='js/graphs.js') }}"></script>
+{% endblock %}
+
+{% block entrypoint %}
+	{% if solves or awards %}
+		<script defer src="{{ url_for('views.themes', path='js/pages/stats.js') }}"></script>
+	{% endif %}
+{% endblock %}
